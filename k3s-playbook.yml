@@ -4,16 +4,12 @@
   become: yes
 
   tasks:  
-  - name: Check for Updates.
-    apt:
-        update_cache: yes
-        force_apt_get: yes
-        cache_valid_time: 3600
-
   - name: Upgrade the OS.
     apt:
       upgrade: dist
-      update_cache: yes 
+      update_cache: yes
+      force_apt_get: yes
+      cache_valid_time: 3600 
   
   - name: Set hostname.
     command: hostnamectl set-hostname {{ node_hostname }}
@@ -27,6 +23,7 @@
     - "cgroup_enable=cpuset"
     - "cgroup_memory=1"
     - "cgroup_enable=memory"
+    when: {{ node_arch }} == "arm64"
 
   - name: Reboot Pi.
     reboot:
