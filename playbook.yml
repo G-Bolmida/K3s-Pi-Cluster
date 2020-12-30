@@ -1,5 +1,6 @@
 ---
-- hosts: pi
+- name: Prep Pis for Clustering.
+  hosts: pi,build-server
   become: yes
 
   tasks:  
@@ -8,3 +9,8 @@
         update_cache: yes
         force_apt_get: yes
         cache_valid_time: 3600
+
+  - name: Upgrade the OS.
+    apt:
+      upgrade: dist
+      update_cache: yes 
