@@ -29,6 +29,19 @@
     reboot:
       reboot_timeout: 3600
 
-  - name: Run K3S install script.
-    script:
-      cmd: ./k3sInstall.sh
+  - name: Download K3s install script.
+    command:
+      cmd: curl -sfL https://get.k3s.io > /home/{{ ansible_ssh_user }}/k3sInstall.sh
+      creates: /home/{{ ansible_ssh_user }}/k3sInstall.sh
+  
+  - name: Change K3S install script permissions.
+    file:
+      path: /home/{{ ansible_ssh_user }}/k3sInstall.sh
+      owner: {{ ansible_ssh_user }}
+      group: {{ ansible_ssh_user }}
+      mode: u+x,g+x,o+x
+     
+  - name: Run K3s install script.
+    command:
+      cmd: sh /home/{{ ansible_ssh_user }}/k3sInstall.sh
+      become: yes
