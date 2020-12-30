@@ -1,6 +1,6 @@
 ---
 - name: Prep Pis for Clustering.
-  hosts: pi,build-server
+  hosts: cluster,build-server
   become: yes
 
   tasks:  
@@ -14,3 +14,6 @@
     apt:
       upgrade: dist
       update_cache: yes 
+  
+  - name: Set hostname
+    command: hostnamectl set-hostname {{ node_hostname }}

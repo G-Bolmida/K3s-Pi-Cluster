@@ -27,4 +27,6 @@ Kubernetes Cluster using 5x Raspberry Pi 4 4GB.
 
 6. On the computer you are connecting from, copy your SSH key over to the newly provisioned Pi with ssh-copy-id.
 
-7. Run the included Ansible playbook to finish provisioning the node.
+7. Note: You may need to wait 10-15 minutes for the auto update task to finish and release dpkg before running the next step.
+
+7. Add the IP of your node or all nodes to ansible inventory file and run the included Ansible playbook to finish provisioning the node.
