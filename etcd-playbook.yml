@@ -4,6 +4,11 @@
   become: yes
 
   tasks:  
+  - name: Install needed packages.
+    apt:
+      name: openssl
+      state: latest
+  
   - name: Check for etcd and etcdctl install.
   ansible.builtin.stat:
     path:
@@ -66,3 +71,24 @@
     file:
       path: /home/{{ ansible_ssh_user }}/certs
       state: directory
+
+  - name: Create certificate config file.
+    file:
+      path: /home/{{ ansible_ssh_user }}/certs/cert.json
+      state: touch
+
+  - name: Populate cert config file.
+    lineinfile:
+      path: /home/{{ ansible_ssh_user }}/certs/cert.json
+      line: {"CN":"CA","key":{"algo":"rsa","size":2048}}
+
+  - name: Create certs.
+    command: 
+      cmd: cfssl gencert -initca /home/{{ ansible_ssh_user }}/certs/cert.json | cfssljson -bare ca -
+      chdir: /home/{{ ansible_ssh_user }}/certs/
+      creates:
+        - ca-key.pem
+        - ca.pem
+        - ca.csr
+
+
