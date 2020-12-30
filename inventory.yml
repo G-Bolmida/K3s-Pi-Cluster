@@ -7,6 +7,7 @@ cluster:
   vars:
     ansible_ssh_user: ubuntu
     etcd_version: v3.4.14
+    # Select nodes CPU architecture 'arm64' or 'amd64'
     node_arch: arm64
 #build-server:
 #  hosts:
