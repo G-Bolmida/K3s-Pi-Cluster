@@ -6,25 +6,27 @@
   tasks:  
   - name: Check for etcd and etcdctl install.
   ansible.builtin.stat:
-    path: /usr/local/bin/etcd
+    path:
+      - /usr/local/bin/etcd
+      - /usr/local/bin/etcdctl
   register: etcd
   
   - name: Create etcd directory.
     file:
-      path: /home/ubuntu/etcd-install-temp
+      path: /home/{{ ansible_ssh_user }}/etcd-install-temp
       state: directory
     when: not etcd
   
   - name: Download and extract etcd binaries.
     unarchive:
       src: https://github.com/etcd-io/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-{{ node_arch }}.tar.gz
-      dest: /home/ubuntu/etcd-install-temp/
+      dest: /home/{{ ansible_ssh_user }}/etcd-install-temp/
       remote_src: yes
     when: not etcd
 
   - name: Allow Architecture.
     lineinfile:
-      path: /home/ubuntu/.profile
+      path: /home/{{ ansible_ssh_user }}/.profile
       line: export ETCD_UNSUPPORTED_ARCH=arm64
     when:
       - not etcd
@@ -40,7 +42,7 @@
 
   - name: Move etcd binary to '/usr/local/bin'.
     copy:
-      src: /home/ubuntu/etcd-install-temp/etcd-{{ etcd_version }}-linux-arm64/etcd
+      src: /home/{{ ansible_ssh_user }}/etcd-install-temp/etcd-{{ etcd_version }}-linux-arm64/etcd
       dest: /usr/local/bin/etcd
       remote_src: yes
       mode: u+x,g+x,o+x
@@ -48,7 +50,7 @@
   
   - name: Move etcdctl binary to '/usr/local/bin'.
     copy:
-      src: /home/ubuntu/etcd-install-temp/etcd-{{ etcd_version }}-linux-arm64/etcdctl
+      src: /home/{{ ansible_ssh_user }}/etcd-install-temp/etcd-{{ etcd_version }}-linux-arm64/etcdctl
       dest: /usr/local/bin/etcdctl
       remote_src: yes
       mode: u+x,g+x,o+x
@@ -56,6 +58,11 @@
 
   - name: Remove temp install directory.
     file:
-      path: /home/ubuntu/etcd-install-temp
+      path: /home/{{ ansible_ssh_user }}/etcd-install-temp
       state: absent
     when: not etcd
+
+  - name: Create etcd certificate directory.
+    file:
+      path: /home/{{ ansible_ssh_user }}/certs
+      state: directory

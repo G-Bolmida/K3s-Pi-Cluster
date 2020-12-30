@@ -5,7 +5,9 @@ cluster:
       ansible_host: 192.168.2.11
       node_hostname: node1
   vars:
+    # Select installation user
     ansible_ssh_user: ubuntu
+    # Select which release of etcd to run
     etcd_version: v3.4.14
     # Select nodes CPU architecture 'arm64' or 'amd64'
     node_arch: arm64
@@ -15,22 +17,3 @@ cluster:
 #      ansible_host: 192.168.2.20
 #  vars:
 #    ansible_ssh_user: ubuntu
-
-
-
-#  hosts:
-#    nodes:
-#192.168.2.10 hostname="ClusterNode1"
-#192.168.2.11 hostname="ClusterNode2"
-#192.168.2.12 hostname="ClusterNode3"
-#192.168.2.13 hostname="ClusterNode4"
-#192.168.2.14 hostname="ClusterNode5"
-
-#[build-server]
-#192.168.2.20 hostname="BuildServer"
-
-#[nodes:vars]
-#ansible_ssh_user=ubuntu
-
-#[build-server:vars]
-#ansible_ssh_user=ubuntu
