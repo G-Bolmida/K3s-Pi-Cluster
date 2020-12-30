@@ -1,0 +1,45 @@
+---
+- name: Install distributed etcd database.
+  hosts: cluster
+  become: yes
+
+  tasks:  
+  - name: Create etcd directory.
+    file:
+      path: /home/ubuntu/etcd-install-temp
+      state: directory
+  
+  - name: Download and extract etcd binaries.
+    unarchive:
+      src: https://github.com/etcd-io/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-arm64.tar.gz
+      dest: /home/ubuntu/etcd-install-temp/
+      remote_src: yes
+
+  - name: Allow Architecture.
+    lineinfile:
+      path: /home/ubuntu/.profile
+      line: export ETCD_UNSUPPORTED_ARCH=arm64
+
+  - name: Allow Architecture for root.
+    lineinfile:
+      path: /etc/environment
+      line: ETCD_UNSUPPORTED_ARCH=arm64
+
+  - name: Move etcd binary to '/usr/local/bin'.
+    copy:
+      src: /home/ubuntu/etcd-install-temp/etcd-{{ etcd_version }}-linux-arm64/etcd
+      dest: /usr/local/bin/etcd
+      remote_src: yes
+      mode: u+x,g+x,o+x
+  
+  - name: Move etcdctl binary to '/usr/local/bin'.
+    copy:
+      src: /home/ubuntu/etcd-install-temp/etcd-{{ etcd_version }}-linux-arm64/etcdctl
+      dest: /usr/local/bin/etcdctl
+      remote_src: yes
+      mode: u+x,g+x,o+x
+
+  - name: Remove temp install directory.
+    file:
+      path: /home/ubuntu/etcd-install-temp
+      state: absent
