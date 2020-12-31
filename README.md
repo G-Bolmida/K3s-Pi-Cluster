@@ -34,4 +34,3 @@ K3s Kubernetes Cluster with highly available etcd datastore using Ansible - made
 # etcd and K3s Installation
 1. Add the IPs, hostnames, and variables of all your nodes to the 'inventory.yml' Ansible inventory file. Make sure to check the inventory file for the right CPU architecture or the playbooks will not work, default is 'arm64'.
 
-2. ansible-playbook -i inventory.yml etcd-playbook.yml
