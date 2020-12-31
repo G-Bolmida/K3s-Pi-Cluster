@@ -1,14 +1,9 @@
 ---
 - name: Install distributed etcd database.
-  hosts: cluster
+  hosts: linode
   become: yes
 
   tasks:  
-  - name: Install needed packages.
-    apt:
-      name: golang-cfssl
-      state: latest
-  
   - name: Check for etcd install.
     stat:
       path: /usr/local/bin/etcd

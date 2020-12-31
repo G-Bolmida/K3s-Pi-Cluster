@@ -37,3 +37,12 @@ cluster:
 #      ansible_host: 192.168.2.20
 #  vars:
 #    ansible_ssh_user: ubuntu
+#linode:
+#  hosts:
+#    test1:
+#      ansible_host: 0.0.0.0
+#      node_hostname: test1
+#      ansible_ssh_user: root
+#      node_distro: ubuntu
+#      node_arch: amd64
+#      etcd_version: v3.4.14

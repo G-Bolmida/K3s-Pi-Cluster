@@ -27,12 +27,9 @@ K3s Kubernetes Cluster with highly available etcd datastore using Ansible - made
 
 7. On the computer you are connecting from, copy your SSH key over to the newly provisioned node with ssh-copy-id.
 
-8. Note: You may need to wait 10-15 minutes for the unattended upgrade task to finish and release dpkg before running the next step. If it gets stuck you will need to force a reboot and run the suggested 'sudo dpkg --configure -a' command to ensure leftover package installations finish before proceeding.
-
-9. Repeat these steps for each node.
+8. Repeat these steps for each node.
 
 # etcd and K3s Installation
 1. Add the IPs, hostnames, and variables of all your nodes to the 'inventory.yml' Ansible inventory file. Make sure to check the inventory file for the right CPU architecture or the playbooks will not work, default is 'arm64'.
 
 2. Before running the etcd-playbook make sure to have golang-cfssl installed on your local machine.
-

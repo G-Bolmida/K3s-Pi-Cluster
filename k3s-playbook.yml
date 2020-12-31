@@ -1,16 +1,9 @@
 ---
 - name: Prep Pis for Clustering.
-  hosts: cluster
+  hosts: linode
   become: yes
 
   tasks:  
-  - name: Upgrade the OS.
-    apt:
-      upgrade: dist
-      update_cache: yes
-      force_apt_get: yes
-      cache_valid_time: 3600 
-  
   - name: Set hostname.
     command: hostnamectl set-hostname {{ node_hostname }}
 
@@ -43,6 +36,8 @@
   - name: Reboot Pi.
     reboot:
       reboot_timeout: 3600
+    when:
+      - node_arch == "arm64"
 
   - name: Download and run K3s install script.
     shell:
