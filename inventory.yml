@@ -4,30 +4,29 @@ cluster:
     node1:
       ansible_host: 192.168.2.10
       node_hostname: node1
+      ansible_ssh_user: ubuntu
+      node_distro: ubuntu
     node2:
       ansible_host: 192.168.2.11
       node_hostname: node2
+      ansible_ssh_user: ubuntu
+      node_distro: ubuntu
     node3:
       ansible_host: 192.168.2.12
       node_hostname: node3
-
       ansible_ssh_user: pi
-
+      node_distro: raspbian
     node4:
       ansible_host: 192.168.2.13
       node_hostname: node4
-
       ansible_ssh_user: pi
-
+      node_distro: raspbian
     node5:
       ansible_host: 192.168.2.14
       node_hostname: node5
-
       ansible_ssh_user: pi
-
+      node_distro: raspbian
   vars:
-    # Select installation user
-    ansible_ssh_user: ubuntu
     # Select which release of etcd to run
     etcd_version: v3.4.14
     # Select nodes CPU architecture 'arm64' or 'amd64'
