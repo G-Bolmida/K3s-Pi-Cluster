@@ -70,37 +70,45 @@
       state: absent
     when: not etcd
 
-  - name: Create etcd certificate directory.
+  - name: Create 'etcd' directory on nodes.
     file:
-      path: /home/{{ ansible_ssh_user }}/certs
+      path: /etc/etcd
       state: directory
 
-  - name: Create certificates only on first node.
-    shell: 
-      cmd: echo '{"CN":"CA","key":{"algo":"rsa","size":2048}}' | cfssl gencert -initca - | cfssljson -bare ca -
-      chdir: /home/{{ ansible_ssh_user }}/certs
-    when: node_hostname == 'node1'
+  - name: Create certificates locally.
+    shell: echo '{"CN":"CA","key":{"algo":"rsa","size":2048}}' | cfssl gencert -initca - | cfssljson -bare ca -
+    delegate_to: localhost
 
-  - name: Create certificate config only on first node.
-    shell:
-      cmd: echo '{"signing":{"default":{"expiry":"43800h","usages":["signing","key encipherment","server auth","client auth"]}}}' > ca-config.json
-      chdir: /home/{{ ansible_ssh_user }}/certs
-    when: node_hostname == 'node1'
+  - name: Create certificate config locally.
+    shell: echo '{"signing":{"default":{"expiry":"43800h","usages":["signing","key encipherment","server auth","client auth"]}}}' > ca-config.json
+    delegate_to: localhost
 
+  - name: Create certs for each node locally.
+    shell: echo '{"CN":"{{ node_hostname }}","hosts":[""],"key":{"algo":"rsa","size":2048}}' | cfssl gencert -config=ca-config.json -ca=ca.pem -ca-key=ca-key.pem -hostname="{{ ansible_host }},{{ node_hostname }}" - | cfssljson -bare {{ node_hostname }}
+    delegate_to: localhost
 
-#  - name: Create certs for each node.
-#    shell: 
-#      cmd: echo '{"CN":"{{ node_hostname }}","hosts":[""],"key":{"algo":"rsa","size":2048}}' | cfssl gencert -config=ca-config.json -ca=ca.pem -ca-key=ca-key.pem -hostname="{{ ansible_host }},#{{ node_hostname }}" - | cfssljson -bare {{ node_hostname }}
-#      chdir: /home/{{ ansible_ssh_user }}/certs
-#  when: node_hostname == 'node1'      
+  - name: Modify file permissions before copying.
+    shell: chmod go+r *-key.pem
+    delegate_to: localhost
 
-  
- 
-  
-  - name: Show all the hosts
-    shell:
-      cmd: echo "{{ item.key }} of {{ item.value }}" >> /home/{{ ansible_ssh_user }}/testfile
-    with_dict: "{{ nodeVars }}"
-    when: node_hostname == 'node1'
-  
-  
+  - name: Copy 'etcd-ca.crt' to all hosts.
+    copy:
+      src: ./ca.pem
+      dest: /etc/etcd/etcd-ca.crt
+      owner: "{{ ansible_ssh_user }}"
+      group: "{{ ansible_ssh_user }}"
+
+  - name: Copy 'server.crt' to all hosts.
+    copy:
+      src: ./{{ node_hostname }}.pem
+      dest: /etc/etcd/server.crt
+      owner: "{{ ansible_ssh_user }}"
+      group: "{{ ansible_ssh_user }}"
+
+  - name: Copy 'server.key' to all hosts.
+    copy:
+      src: ./{{ node_hostname }}-key.pem
+      dest: /etc/etcd/server.key
+      owner: "{{ ansible_ssh_user }}"
+      group: "{{ ansible_ssh_user }}"
+      mode: '0600'

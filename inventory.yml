@@ -26,21 +26,12 @@ cluster:
       ansible_ssh_user: pi
 
   vars:
-    nodeVars: {
-                 '192.168.2.10': 'node1',
-                 '192.168.2.11': 'node2',
-                 '192.168.2.12': 'node3',
-                 '192.168.2.13': 'node4',
-                 '192.168.2.14': 'node5'
-    }
     # Select installation user
     ansible_ssh_user: ubuntu
     # Select which release of etcd to run
     etcd_version: v3.4.14
     # Select nodes CPU architecture 'arm64' or 'amd64'
     node_arch: arm64
-
-    
 #build-server:
 #  hosts:
 #    build1:
