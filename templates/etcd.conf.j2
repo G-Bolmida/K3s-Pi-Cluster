@@ -1,0 +1,19 @@
+ETCD_NAME="{{ nodes.name }}"
+ETCD_LISTEN_PEER_URLS="https://{{ node.ansible_host }}:2380"
+ETCD_LISTEN_CLIENT_URLS="https://{{ node.ansible_host }}:2379"
+ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster"
+  
+ETCD_INITIAL_CLUSTER="{% for node in nodes %}{{ node.name }}=https://{{ node.ansible_host }}:2380{% endfor %}"
+  
+ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ node.ansible_host }}:2380"
+ETCD_ADVERTISE_CLIENT_URLS="https://{{ node.ansible_host }}:2379"
+ETCD_TRUSTED_CA_FILE="/etc/etcd/etcd-ca.crt"
+ETCD_CERT_FILE="/etc/etcd/server.crt"
+ETCD_KEY_FILE="/etc/etcd/server.key"
+ETCD_PEER_CLIENT_CERT_AUTH=true
+ETCD_PEER_TRUSTED_CA_FILE="/etc/etcd/etcd-ca.crt"
+ETCD_PEER_KEY_FILE="/etc/etcd/server.key"
+ETCD_PEER_CERT_FILE="/etc/etcd/server.crt"
+ETCD_DATA_DIR="/var/lib/etcd"
+
+  

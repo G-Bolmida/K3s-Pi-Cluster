@@ -1,0 +1,22 @@
+---
+  nodes:
+    - name: node1
+      ansible_ssh_user: ubuntu
+      node_distro: ubuntu
+      ansible_host: 192.168.2.10
+    - name: node2
+      ansible_ssh_user: ubuntu
+      node_distro: ubuntu
+      ansible_host: 192.168.2.11
+    - name: node3
+      ansible_ssh_user: ubuntu
+      node_distro: ubuntu
+      ansible_host: 192.168.2.12
+    - name: node4
+      ansible_ssh_user: ubuntu
+      node_distro: ubuntu
+      ansible_host: 192.168.2.13
+    - name: node5
+      ansible_ssh_user: ubuntu
+      node_distro: ubuntu
+      ansible_host: 192.168.2.14

@@ -1,0 +1,9 @@
+  - name: Demonstrating variables in Jinja2 Loops
+    hosts: localhost
+    connection: local
+    vars_files:
+      - vars.yml
+    gather_facts: no
+    tasks:
+      - name: Create the Jinja2 based template
+        template: src=./etcd.conf.j2 dest=./output.txt

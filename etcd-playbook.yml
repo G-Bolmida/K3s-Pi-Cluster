@@ -1,6 +1,6 @@
 ---
 - name: Install distributed etcd database.
-  hosts: linode
+  hosts: cluster
   become: yes
 
   tasks:  
