@@ -3,12 +3,13 @@ cluster:
   hosts:
     node1:
       ansible_host: 0ce1fdb7141c.mylabserver.com
+      ansible_IP: 172.31.25.191
       node_hostname: node1
-      node_role: controller
     node2:
       ansible_host: e2ef058f8c1c.mylabserver.com
+      ansible_IP: 172.31.27.169
       node_hostname: node2
-      node_role: controller
+      node_role: worker
   vars:
     # Select which release of etcd to run
     etcd_version: v3.4.14
