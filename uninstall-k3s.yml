@@ -1,0 +1,20 @@
+---
+- name: Take down K3s cluster.
+  hosts: cluster
+  become: yes
+
+  tasks:  
+  - name: Check for agent uninstall script.
+    stat:
+      path: /usr/local/bin/k3s-agent-uninstall.sh
+    register: agentPresent
+  
+  - name: Uninstall with K3s unistall script.
+    shell:
+      cmd: sh /usr/local/bin/k3s-uninstall.sh
+    when: agentPresent
+
+  - name: Uninstall with K3s agent uninstall script.
+    shell:
+      cmd: sh /usr/local/bin/k3s-agent-uninstall.sh
+    when: not agentPresent

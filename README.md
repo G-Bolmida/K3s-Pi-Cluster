@@ -33,3 +33,5 @@ K3s Kubernetes Cluster with highly available etcd datastore using Ansible - made
 1. Add the IPs, hostnames, and variables of all your nodes to the 'inventory.yml' Ansible inventory file. Make sure to check the inventory file for the right CPU architecture or the playbooks will not work, default is 'arm64'.
 
 2. Before running the etcd-playbook make sure to have golang-cfssl installed on your local machine.
+
+NOTE: When running any of these playbooks be sure to run with the "-K" and supply the root password for the remote host.

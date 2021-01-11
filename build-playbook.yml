@@ -1,0 +1,95 @@
+---
+- name: Prep build-server.
+  hosts: build-server
+  become: yes
+
+  tasks:  
+  - name: Set hostname.
+    command: hostnamectl set-hostname {{ node_hostname }}
+
+  - name: Enable container features on ubuntu.
+    replace:
+      path: /boot/firmware/cmdline.txt
+      regexp: '^([\w](?!.*\b{{ item }}\b).*)$'
+      replace: '\1 {{ item }}'
+    with_items:
+    - "cgroup_enable=cpuset"
+    - "cgroup_memory=1"
+    - "cgroup_enable=memory"
+    when: 
+      - node_arch == "arm64"
+      - node_distro == "ubuntu"
+
+  - name: Enable container features on raspbian.
+    replace:
+      path: /boot/cmdline.txt
+      regexp: '^([\w](?!.*\b{{ item }}\b).*)$'
+      replace: '\1 {{ item }}'
+    with_items:
+    - "cgroup_enable=cpuset"
+    - "cgroup_memory=1"
+    - "cgroup_enable=memory"
+    when: 
+      - node_arch == "arm64"
+      - node_distro == "raspbian"
+
+  - name: Reboot Pi.
+    reboot:
+      reboot_timeout: 3600
+    when:
+      - node_arch == "arm64"
+
+  - name: Remove old versions of packages.
+    apt:
+      name:
+        - docker
+        - docker-engine
+        - docker.io
+        - containerd
+        - runc
+      state: absent
+
+  - name: Install pre-reqs.
+    apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+      state: latest
+      update_cache: yes
+
+  - name: Add Docker GPG key.
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker repo.
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu focal stable arm64
+      state: present
+
+  - name: Install Docker.
+    apt:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: latest
+      update_cache: yes
+
+  - name: Ensure Docker group exists.
+    group:
+      name: docker
+      state: present
+
+  - name: Make sure user is part of docker group.
+    user:
+      name: "{{ ansible_ssh_user }}"
+      group: docker
+
+  - name: Enable docker service.
+    systemd:
+      name: docker
+      enabled: yes

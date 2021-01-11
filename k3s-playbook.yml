@@ -1,6 +1,6 @@
 ---
 - name: Prep Pis for Clustering.
-  hosts: linode
+  hosts: cluster
   become: yes
 
   tasks:  
@@ -42,3 +42,17 @@
   - name: Download and run K3s install script.
     shell:
       cmd: curl -sfL https://get.k3s.io | sh -
+    when:
+      - node_role == "controller"
+
+  - name: Store controller token value in variable.
+    shell:
+      cmd: cat /var/lib/rancher/k3s/server/token
+    register: token
+    when:
+      - node_role == "controller"
+
+  - debug:
+      var: token
+    when:
+      - node_role == "controller"
