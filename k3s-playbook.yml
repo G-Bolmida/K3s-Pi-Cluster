@@ -69,13 +69,13 @@
 
   - name: Create Control Plane.
     shell:
-      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --server https://{{ controller1_ip }}:6443 --no-deploy servicelb
+      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --server https://{{ primary_controller_ip }}:6443 --no-deploy servicelb
     when:
       - node_role == "controller"
 
   - name: Install K3s on all worker nodes.
     shell:
-      cmd: curl -sfL https://get.k3s.io | K3S_URL="https://{{ controller1_ip }}:6443" K3S_TOKEN="{{ k3s_token }}" sh -
+      cmd: curl -sfL https://get.k3s.io | K3S_URL="https://{{ primary_controller_ip }}:6443" K3S_TOKEN="{{ k3s_token }}" sh -
     when: 
       - node_role == "worker"
 

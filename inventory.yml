@@ -38,7 +38,7 @@ cluster:
     node_arch: arm64
     ansible_ssh_user: ubuntu
     k3s_token: "eXamPleT0Ken!Pl3as3Chang3tH1s"
-    controller1_ip: 192.168.2.10
+    primary_controller_ip: 192.168.2.10
 build-server:
   hosts:
     build1:
