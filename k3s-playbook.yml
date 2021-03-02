@@ -63,13 +63,13 @@
 
   - name: Download and install K3s to controller1.
     shell:
-      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --cluster-init --disable servicelb
+      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --cluster-init --disable servicelb --cluster-domain geo.cluster 
     when:
       - node_role == "first_controller"
 
   - name: Create Control Plane.
     shell:
-      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --server https://{{ primary_controller_ip }}:6443 --no-deploy servicelb
+      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --server https://{{ primary_controller_ip }}:6443 --no-deploy servicelb --cluster-domain geo.cluster
     when:
       - node_role == "controller"
 
@@ -83,3 +83,10 @@
     ansible.builtin.lineinfile:
       path: /etc/environment
       line: KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+  - name: Store Kubeconfig.
+    ansible.builtin.fetch:
+      src: /etc/rancher/k3s/k3s.yaml
+      dest: ./kubeconfig
+    when: 
+      - node_role == "first_controller"

@@ -1,3 +1,4 @@
 ca-config.json
 *.pem
 *.csr
+k3s.yaml
