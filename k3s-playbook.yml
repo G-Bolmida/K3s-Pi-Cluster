@@ -7,6 +7,44 @@
   - name: Set hostname.
     command: hostnamectl set-hostname {{ node_hostname }}
 
+  - name: Gather package information.
+    package_facts:
+      manager: apt
+  
+  - name: Remove lxd snap.
+    community.general.snap:
+      name: lxd
+      state: absent
+    when: "'snapd' in ansible_facts.packages"
+
+  - name: Remove core18 snap.
+    community.general.snap:
+      name: core18
+      state: absent
+    when: "'snapd' in ansible_facts.packages"
+
+  - name: Remove snapd snap.
+    community.general.snap:
+      name: snapd
+      state: absent
+    when: "'snapd' in ansible_facts.packages"
+
+  - name: Remove and purge snapd.
+    apt:
+      name: snapd
+      state: absent
+      purge: yes
+    when: "'snapd' in ansible_facts.packages"
+
+  - name: Remove uneeded dependencies.
+    apt:
+      autoremove: yes
+
+  - name: Upgrade the OS.
+    apt:
+      upgrade: dist
+      update_cache: yes
+
   - name: Enable container features on ubuntu.
     replace:
       path: /boot/firmware/cmdline.txt
@@ -18,42 +56,30 @@
     - "cgroup_enable=memory"
     when: 
       - node_arch == "arm64"
-      - node_distro == "ubuntu"
-
-  - name: Enable container features on raspbian.
-    replace:
-      path: /boot/cmdline.txt
-      regexp: '^([\w](?!.*\b{{ item }}\b).*)$'
-      replace: '\1 {{ item }}'
-    with_items:
-    - "cgroup_enable=cpuset"
-    - "cgroup_memory=1"
-    - "cgroup_enable=memory"
-    when: 
-      - node_arch == "arm64"
-      - node_distro == "raspbian"
 
   - name: Reboot Pi.
     reboot:
       reboot_timeout: 3600
-    when:
-      - node_arch == "arm64"
 
-  - name: Download and run K3s install script.
+  - name: Download and install K3s to controller1.
     shell:
-      cmd: curl -sfL https://get.k3s.io | sh -
+      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --cluster-init --disable servicelb
     when:
-      - node_hostname == "node1"
+      - node_role == "first_controller"
 
-  - name: Store controller token value in variable.
+  - name: Create Control Plane.
     shell:
-      cmd: cat /var/lib/rancher/k3s/server/token
-    register: token
+      cmd: curl -sfL https://get.k3s.io | K3S_TOKEN="{{ k3s_token }}" sh -s - server --server https://{{ controller1_ip }}:6443 --no-deploy servicelb
     when:
-      - node_hostname == "node1"
+      - node_role == "controller"
 
-  - name: Install and add worker node
+  - name: Install K3s on all worker nodes.
     shell:
-      cmd: curl -sfL https://get.k3s.io | K3S_URL=https://{{ ansible_IP }}:6443 K3S_TOKEN={{ token.stdout }} sh -
+      cmd: curl -sfL https://get.k3s.io | K3S_URL="https://{{ controller1_ip }}:6443" K3S_TOKEN="{{ k3s_token }}" sh -
     when: 
       - node_role == "worker"
+
+  - name: Expose config file.
+    ansible.builtin.lineinfile:
+      path: /etc/environment
+      line: KUBECONFIG=/etc/rancher/k3s/k3s.yaml

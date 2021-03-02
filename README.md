@@ -2,7 +2,7 @@
 K3s Kubernetes Cluster with highly available etcd datastore using Ansible - made with Raspberry Pi or 'arm64' nodes in mind.
 
 # Pi Setup Procedure
-1. Flash 64-bit Ubuntu-Server 20.04.1 image to SD card.
+1. Flash 64-bit Ubuntu-Server 20.10 image to SD card.
 
 2. Add empty 'ssh' file to 'system-boot' partition.
 
@@ -34,4 +34,4 @@ K3s Kubernetes Cluster with highly available etcd datastore using Ansible - made
 
 2. Before running the etcd-playbook make sure to have golang-cfssl installed on your local machine.
 
-NOTE: When running any of these playbooks be sure to run with the "-K" and supply the root password for the remote host.
+NOTE: These playbooks make use of community ansible plugins, ensure community.general is installed by "ansible-galaxy collection install community.general" before running.

@@ -1,22 +1,44 @@
 ---
 cluster:
   hosts:
+    controller1:
+      ansible_host: controller1.cluster
+      ansible_IP: 192.168.2.10
+      node_hostname: controller1
+      node_role: first_controller
+    controller2:
+      ansible_host: controller2.cluster
+      ansible_IP: 192.168.2.11
+      node_hostname: controller2
+      node_role: controller
+    controller3:
+      ansible_host: controller3.cluster
+      ansible_IP: 192.168.2.12
+      node_hostname: controller3
+      node_role: controller
     node1:
-      ansible_host: 0ce1fdb7141c.mylabserver.com
-      ansible_IP: 172.31.25.191
+      ansible_host: node1.cluster
+      ansible_IP: 192.168.2.13
       node_hostname: node1
+      node_role: worker
     node2:
-      ansible_host: e2ef058f8c1c.mylabserver.com
-      ansible_IP: 172.31.27.169
+      ansible_host: node2.cluster
+      ansible_IP: 192.168.2.14
       node_hostname: node2
+      node_role: worker
+    node3:
+      ansible_host: node3.cluster
+      ansible_IP: 192.168.2.15
+      node_hostname: node3
       node_role: worker
   vars:
     # Select which release of etcd to run
-    etcd_version: v3.4.14
+    #etcd_version: v3.4.14
     # Select nodes CPU architecture 'arm64' or 'amd64'
-    node_arch: amd64
-    ansible_ssh_user: cloud_user
-    node_distro: ubuntu
+    node_arch: arm64
+    ansible_ssh_user: ubuntu
+    k3s_token: "eXamPleT0Ken!Pl3as3Chang3tH1s"
+    controller1_ip: 192.168.2.10
 build-server:
   hosts:
     build1:
@@ -28,13 +50,3 @@ build-server:
     etcd_version: v3.4.14
     # Select nodes CPU architecture 'arm64' or 'amd64'
     node_arch: arm64
-    node_distro: ubuntu
-#linode:
-#  hosts:
-#    test1:
-#      ansible_host: 0.0.0.0
-#      node_hostname: test1
-#      ansible_ssh_user: root
-#      node_distro: ubuntu
-#      node_arch: amd64
-#      etcd_version: v3.4.14
