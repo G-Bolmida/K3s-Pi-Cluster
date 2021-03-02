@@ -3,18 +3,45 @@
   hosts: cluster
   become: yes
 
-  tasks:  
-  - name: Check for agent uninstall script.
+  tasks:    
+  - name: Check for worker uninstall script.
     stat:
       path: /usr/local/bin/k3s-agent-uninstall.sh
-    register: agentPresent
-  
-  - name: Uninstall with K3s unistall script.
-    shell:
-      cmd: sh /usr/local/bin/k3s-uninstall.sh
-    when: agentPresent
+    register: scriptPresent
+    when:
+      - node_role == "worker"
 
-  - name: Uninstall with K3s agent uninstall script.
+  - name: Check for controller uninstall script.
+    stat:
+      path: /usr/local/bin/k3s-uninstall.sh
+    register: scriptPresent
+    when:
+      - node_role == "controller"
+
+  - name: Check for initial controller uninstall script.
+    stat:
+      path: /usr/local/bin/k3s-uninstall.sh
+    register: scriptPresent
+    when:
+      - node_role == "first_controller"
+
+  - name: Uninstall K3s on worker nodes using unistall script.
     shell:
       cmd: sh /usr/local/bin/k3s-agent-uninstall.sh
-    when: not agentPresent
+    when:
+      - node_role == "worker"
+      - not scriptPresent
+
+  - name: Uninstall K3s on controller nodes using uninstall script.
+    shell:
+      cmd: sh /usr/local/bin/k3s-uninstall.sh
+    when:
+      - node_role == "controller"
+      - not scriptPresent
+
+  - name: Uninstall K3s on initial controller node using uninstall script.
+    shell:
+      cmd: sh /usr/local/bin/k3s-uninstall.sh
+    when:
+      - node_role == "first_controller"
+      - not scriptPresent
