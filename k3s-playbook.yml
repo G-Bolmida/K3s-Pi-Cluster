@@ -45,7 +45,7 @@
       upgrade: dist
       update_cache: yes
 
-  - name: Enable container features on ubuntu.
+  - name: Enable container features and decrease GPU memory use on ubuntu.
     replace:
       path: /boot/firmware/cmdline.txt
       regexp: '^([\w](?!.*\b{{ item }}\b).*)$'
@@ -54,8 +54,13 @@
     - "cgroup_enable=cpuset"
     - "cgroup_memory=1"
     - "cgroup_enable=memory"
+    - "gpu_mem=16"
     when: 
       - node_arch == "arm64"
+
+  - name: Set timezone to America/New_York (Change this if in another time zone)
+    community.general.timezone:
+      name: America/New_York
 
   - name: Reboot Pi.
     reboot:
